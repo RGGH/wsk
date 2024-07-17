@@ -1,3 +1,5 @@
+use std::env;
+use log::info;
 use std::time::Duration;
 use tokio::time;
 use futures::SinkExt;
@@ -8,9 +10,13 @@ use tokio_tungstenite::tungstenite::Message;
 
 #[tokio::main]
 async fn main() {
+    env::set_var("RUST_LOG", "info"); // Set log level
+    // Initialize logger
+    env_logger::init();
+
     let addr = "127.0.0.1:8080";
+    info!("WebSocket server started and listening on port 8080");
     let listener = TcpListener::bind(addr).await.unwrap();
-    println!("{}", "running websocket server...connect from index.html");
     while let Ok((stream, _)) = listener.accept().await {
         tokio::spawn(handle_client(stream));
     }
@@ -19,6 +25,7 @@ async fn main() {
 async fn handle_client(stream: tokio::net::TcpStream) {
     let ws_stream = accept_async(stream).await.unwrap();
     let (mut write, mut read) = ws_stream.split();
+    info!("New WebSocket connection established");
 
     // Create a task to periodically send updates
     tokio::spawn(async move {
