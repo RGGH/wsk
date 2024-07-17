@@ -30,7 +30,7 @@ async fn handle_client(stream: tokio::net::TcpStream) {
     // Create a task to periodically send updates
     tokio::spawn(async move {
         let mut score = 0;
-        let mut interval = time::interval(Duration::from_secs(30));
+        let mut interval = time::interval(Duration::from_secs(20));
         
         loop {
             interval.tick().await;
